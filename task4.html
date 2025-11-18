@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Responsive Demo — Mobile Friendly</title>
+  <style>
+    /* ===== Mobile-first base styles ===== */
+    :root{
+      --bg:#f7f8fb; --card:#fff; --muted:#6b7280; --accent:#2563eb; --gap:16px; --radius:10px;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:#0f172a;line-height:1.45}
+
+    .container{max-width:1100px;margin:20px auto;padding:16px}
+
+    /* Simple header */
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    nav{display:none} /* hide full nav on small screens */
+
+    /* Page layout (mobile-first: single column) */
+    main{display:block;margin-top:var(--gap)}
+    .hero{background:var(--card);padding:18px;border-radius:var(--radius);box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+    .hero h1{margin:0 0 6px;font-size:20px}
+    .hero p{margin:0;color:var(--muted)}
+
+    /* Cards stack vertically on mobile */
+    .grid{display:grid;grid-template-columns:1fr;gap:var(--gap);margin-top:var(--gap)}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 4px 12px rgba(2,6,23,0.04)}
+
+    /* Example content columns inside a card (cards remain single column on mobile) */
+    .card .row{display:flex;flex-direction:column;gap:10px}
+    .button{display:inline-block;padding:8px 12px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none}
+
+    footer{margin-top:24px;color:var(--muted);font-size:13px;text-align:center}
+
+    /* ===== Desktop / larger screens: use media queries to make responsive ===== */
+    @media (min-width: 700px){
+      /* show full nav */
+      nav{display:flex;gap:12px}
+      nav a{color:var(--muted);text-decoration:none;padding:8px;border-radius:8px}
+      nav a:hover{background:rgba(37,99,235,0.06)}
+
+      /* two-column layout: main + sidebar */
+      main{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-top:20px}
+      .hero{grid-column:1 / -1}
+      .grid{grid-template-columns:1fr;gap:20px}
+    }
+
+    @media (min-width: 980px){
+      .container{padding:24px}
+      .grid{grid-template-columns:repeat(2, 1fr)}
+      .card .row{flex-direction:row;align-items:center}
+    }
+
+    /* Fine-tuning for very large screens */
+    @media (min-width: 1200px){
+      .container{max-width:1200px}
+      .hero h1{font-size:28px}
+    }
+
+    /* Accessibility: focus states */
+    a:focus, button:focus{outline:3px solid rgba(37,99,235,0.18);outline-offset:3px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">RD</div>
+        <div>
+          <div style="font-weight:700">Responsive Site</div>
+          <div style="font-size:12px;color:var(--muted)">Converted to mobile-friendly layout</div>
+        </div>
+      </div>
+
+      <nav aria-label="Primary navigation">
+        <a href="#">Home</a>
+        <a href="#">Products</a>
+        <a href="#">Pricing</a>
+        <a href="#">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero card" aria-labelledby="hero-heading">
+        <h1 id="hero-heading">Make your site look great on phones & tablets</h1>
+        <p>This example demonstrates a mobile-first approach. Resize the browser or open on a phone to see layout changes powered by CSS media queries.</p>
+      </section>
+
+      <section>
+        <div class="grid">
+          <div class="card">
+            <h3>Feature</h3>
+            <div class="row">
+              <p style="margin:0">Responsive layouts use <strong>media queries</strong> to change how content is arranged. On small screens we stack; on larger screens we create columns.</p>
+            </div>
+            <div style="margin-top:12px"><a class="button" href="#">Learn more</a></div>
+          </div>
+
+          <div class="card">
+            <h3>Another section</h3>
+            <div class="row">
+              <p style="margin:0">Images, navigation and controls adapt — touch targets are larger and spacing increases for readability on mobile.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Gallery / cards</h3>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <div style="flex:1 1 120px;background:linear-gradient(180deg,#f3f4f6,#fff);padding:12px;border-radius:8px;text-align:center">Item A</div>
+              <div style="flex:1 1 120px;background:linear-gradient(180deg,#fff,#f8fafc);padding:12px;border-radius:8px;text-align:center">Item B</div>
+              <div style="flex:1 1 120px;background:linear-gradient(180deg,#fff,#f8fafc);padding:12px;border-radius:8px;text-align:center">Item C</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Form example</h3>
+            <form>
+              <label style="display:block;font-weight:600;margin-bottom:6px">Email<input type="email" placeholder="you@example.com" style="display:block;width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef8;margin-top:6px"></label>
+              <button style="margin-top:10px" class="button" type="button">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sidebar (on larger screens this appears to the right) -->
+      <aside class="card" aria-label="Related">
+        <h3>Related</h3>
+        <p class="small" style="color:var(--muted)">Helpful tips for responsive design:</p>
+        <ul style="padding-left:18px">
+          <li>Use fluid widths (percentages, flexbox, grid)</li>
+          <li>Prefer mobile-first CSS — start simple</li>
+          <li>Increase touch target sizes (at least 44×44px)</li>
+          <li>Test on real devices and with devtools</li>
+        </ul>
+      </aside>
+
+    </main>
+
+    <footer>
+      © 2025 — Responsive demo. Resize window to test media queries.
+    </footer>
+  </div>
+</body>
+</html>

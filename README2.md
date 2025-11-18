@@ -5,6 +5,8 @@ Users can add tasks, mark them as complete, delete tasks, and clear all or compl
 
 🚀 Features
 
+
+
 ➕ Add new tasks
 
 ✔️ Mark tasks as completed (toggle)
