@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Books API — Web UI</title>
+  <style>
+    :root{font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:#111}
+    body{max-width:900px;margin:28px auto;padding:18px}
+    h1{font-size:24px;margin-bottom:6px}
+    p.lead{color:#444;margin-top:0}
+    .card{border:1px solid #e3e3e3;border-radius:8px;padding:12px;margin:12px 0;box-shadow:0 1px 2px rgba(0,0,0,0.02)}
+    label{display:block;margin-top:8px;font-weight:600}
+    input[type=text]{width:100%;padding:8px;margin-top:6px;border-radius:6px;border:1px solid #d0d0d0}
+    button{margin-top:10px;padding:8px 12px;border-radius:6px;border:0;background:#2563eb;color:#fff;cursor:pointer}
+    button.secondary{background:#6b7280}
+    ul.books{list-style:none;padding:0;margin:0}
+    li.book{padding:10px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center}
+    .meta{font-size:14px;color:#222}
+    .small{font-size:13px;color:#666}
+    .actions button{margin-left:6px}
+    pre{background:#0b1220;color:#e6eef8;padding:8px;border-radius:6px;overflow:auto}
+    .hint{font-size:13px;color:#555}
+  </style>
+</head>
+<body>
+  <h1>Books API — Web UI</h1>
+  <p class="lead">A small single-file frontend to exercise the in-memory Books REST API running at <code>http://localhost:3000</code>.</p>
+
+  <div class="card">
+    <strong>Base URL</strong>
+    <p class="hint">Make sure your API server (books-api-server.js) is running on <code>http://localhost:3000</code>. CORS may be required if you open this page from a file:// URL — run the server with CORS enabled or serve this page via a local static server.</p>
+  </div>
+
+  <div class="card">
+    <h2>Add a new book</h2>
+    <label>Title<input id="title" type="text" placeholder="Book title"></label>
+    <label>Author<input id="author" type="text" placeholder="Author name"></label>
+    <button id="addBtn">Add Book</button>
+    <div id="addResult" class="small"></div>
+  </div>
+
+  <div class="card">
+    <h2>All books</h2>
+    <button id="refreshBtn" class="secondary">Refresh list</button>
+    <ul id="booksList" class="books"></ul>
+  </div>
+
+  <div class="card">
+    <h2>Quick update / delete</h2>
+    <p class="small">Use the controls next to each book in the list to update its title/author or delete it.</p>
+  </div>
+
+  <div class="card">
+    <h2>Example API calls (curl)</h2>
+    <pre>
+# List
+curl http://localhost:3000/books
+
+# Add
+curl -X POST http://localhost:3000/books -H "Content-Type: application/json" -d '{"title":"The Hobbit","author":"J.R.R. Tolkien"}'
+
+# Update
+curl -X PUT http://localhost:3000/books/1 -H "Content-Type: application/json" -d '{"title":"New title"}'
+
+# Delete
+curl -X DELETE http://localhost:3000/books/1
+    </pre>
+  </div>
+
+<script>
+const base = 'http://localhost:3000';
+const booksList = document.getElementById('booksList');
+const refreshBtn = document.getElementById('refreshBtn');
+const addBtn = document.getElementById('addBtn');
+const addResult = document.getElementById('addResult');
+
+async function fetchBooks(){
+  booksList.innerHTML = '<li class="small">Loading…</li>';
+  try{
+    const res = await fetch(base + '/books');
+    if(!res.ok) throw new Error('Failed to fetch');
+    const books = await res.json();
+    renderBooks(books);
+  }catch(err){
+    booksList.innerHTML = `<li class="small">Error: ${err.message}</li>`;
+  }
+}
+
+function renderBooks(books){
+  if(!books || books.length===0){
+    booksList.innerHTML = '<li class="small">No books found</li>';
+    return;
+  }
+  booksList.innerHTML = '';
+  books.forEach(b => {
+    const li = document.createElement('li');
+    li.className = 'book';
+    li.innerHTML = `
+      <div>
+        <div class="meta"><strong>${escapeHtml(b.title)}</strong> — <span class="small">${escapeHtml(b.author)}</span></div>
+        <div class="small">ID: ${b.id}</div>
+      </div>
+      <div class="actions">
+        <button onclick='showEdit(${b.id}, "${escapeAttr(b.title)}", "${escapeAttr(b.author)}")'>Edit</button>
+        <button onclick='removeBook(${b.id})' class='secondary'>Delete</button>
+      </div>
+    `;
+    booksList.appendChild(li);
+  });
+}
+
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escapeAttr(s){ return String(s).replace(/"/g,'\"').replace(/'/g,"\\'"); }
+
+async function addBook(){
+  const title = document.getElementById('title').value.trim();
+  const author = document.getElementById('author').value.trim();
+  if(!title || !author){ addResult.textContent = 'Please fill both fields'; return; }
+  addResult.textContent = 'Adding…';
+  try{
+    const res = await fetch(base + '/books', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({title,author}) });
+    if(res.status===201){
+      const created = await res.json();
+      addResult.textContent = `Created book id=${created.id}`;
+      document.getElementById('title').value=''; document.getElementById('author').value='';
+      fetchBooks();
+    } else {
+      const err = await res.json().catch(()=>({}));
+      addResult.textContent = 'Error: ' + (err.error || res.statusText);
+    }
+  }catch(e){ addResult.textContent = 'Error: ' + e.message }
+}
+
+function showEdit(id, title, author){
+  const newTitle = prompt('New title', title);
+  if(newTitle===null) return; // cancelled
+  const newAuthor = prompt('New author', author);
+  if(newAuthor===null) return;
+  updateBook(id, newTitle, newAuthor);
+}
+
+async function updateBook(id, title, author){
+  try{
+    const res = await fetch(base + '/books/' + id, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({title,author}) });
+    if(!res.ok) throw new Error('Update failed');
+    await res.json();
+    fetchBooks();
+  }catch(e){ alert(e.message) }
+}
+
+async function removeBook(id){
+  if(!confirm('Delete book ID '+id+'?')) return;
+  try{
+    const res = await fetch(base + '/books/' + id, { method:'DELETE' });
+    if(!res.ok) throw new Error('Delete failed');
+    fetchBooks();
+  }catch(e){ alert(e.message) }
+}
+
+addBtn.addEventListener('click', addBook);
+refreshBtn.addEventListener('click', fetchBooks);
+
+// initial load
+fetchBooks();
+</script>
+</body>
+</html>
