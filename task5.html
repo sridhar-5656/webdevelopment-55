@@ -1,0 +1,166 @@
+<!--
+Single-file static site (index.html) for GitHub Pages
+Includes: Home, About, Contact sections using hash routing (no server).
+Deployment instructions (quick):
+1. Create a new GitHub repo (e.g., my-static-site).
+2. Add this file as `index.html` in the repository root (or in /docs/ and select that folder in Pages settings).
+3. Commit & push to branch `main` (or `gh-pages` if you prefer).
+4. On GitHub: Settings -> Pages -> Source: choose `main` branch / root (or /docs). Save.
+5. Your site will be published at: https://<username>.github.io/<repo>/ (or https://<username>.github.io/ if repo name is <username>.github.io)
+
+Optional (CLI):
+  git init
+  git add index.html
+  git commit -m "Initial site"
+  git branch -M main
+  git remote add origin https://github.com/<username>/<repo>.git
+  git push -u origin main
+
+This single file is easy to edit — open in any editor and change text. Enjoy!
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Static Site — GitHub Pages</title>
+  <meta name="description" content="A simple static single-file site for GitHub Pages (Home / About / Contact)." />
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa6b2;--accent:#6ee7b7}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; background:linear-gradient(180deg,#071028 0%, #071525 100%); color:#e6eef6}
+    .container{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),#60a5fa);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#012;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+    nav a{color:var(--muted);text-decoration:none;margin-left:12px;padding:8px;border-radius:8px}
+    nav a.active{color:#041125;background:var(--accent);padding:8px 12px}
+    .hero{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:22px;border-radius:14px;margin-top:18px}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px}
+    .card{background:rgba(255,255,255,0.02);padding:16px;border-radius:12px}
+    .small{font-size:14px;color:var(--muted)}
+    footer{margin-top:24px;text-align:center;color:var(--muted);font-size:13px}
+    /* Responsive */
+    @media (max-width:880px){.grid{grid-template-columns:1fr}.logo{width:40px;height:40px}}
+    /* simple form */
+    input,textarea{width:100%;padding:10px;margin-top:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    button{margin-top:10px;padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#021226;font-weight:600;cursor:pointer}
+    code.block{display:block;padding:12px;background:#021226;border-radius:8px;margin-top:12px;color:#cde}
+    nav button{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:8px;color:var(--muted);cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo">MH</div>
+        <div>
+          <div style="font-weight:700">My Static Site</div>
+          <div class="small">Built for GitHub Pages</div>
+        </div>
+      </div>
+      <nav id="nav">
+        <a href="#/" data-link="#/">Home</a>
+        <a href="#/about" data-link="#/about">About</a>
+        <a href="#/contact" data-link="#/contact">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="home" class="hero page">
+        <h1>Welcome — Static site deployed on GitHub Pages</h1>
+        <p class="lead">This single HTML file contains three "pages" (Home, About, Contact) using client-side hash routing. Edit the content, push to GitHub, then enable Pages in your repo settings.</p>
+        <div class="grid">
+          <div>
+            <div class="card">
+              <h3>Why GitHub Pages?</h3>
+              <p class="small">Free hosting for static assets with automatic HTTPS. Great for portfolios, docs, and small marketing sites.</p>
+              <div class="small">Tips:</div>
+              <ul class="small">
+                <li>Use the repository root or the /docs folder as the Pages source.</li>
+                <li>For a custom domain, add a CNAME file and configure DNS.</li>
+                <li>To use Jekyll, add markdown files and _config.yml (Pages supports it automatically).</li>
+              </ul>
+              <div class="small">Example deploy command (replace with your repo):</div>
+              <pre class="block">git add index.html
+git commit -m "publish site"
+git push origin main</pre>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h3>Made for learning</h3>
+              <p class="small">This structure is intentionally simple. When you're ready, split to multiple files or add a build step (Hugo, Eleventy, Vite) and push the generated output to GitHub Pages.</p>
+            </div>
+          </div>
+
+          <aside>
+            <div class="card">
+              <div style="font-weight:700">Quick Links</div>
+              <div class="small" style="margin-top:8px">Use these commands locally:</div>
+              <pre class="block"># create repo
+git init
+# add remote & push
+# see top of page comments for full commands</pre>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="about" class="page" style="display:none">
+        <div class="card">
+          <h1>About this sample site</h1>
+          <p class="small">A single-file SPA that demonstrates navigation without a backend. You can easily split each section into its own HTML file if you prefer multi-file sites.</p>
+          <h3>What to customize</h3>
+          <ul class="small">
+            <li>Brand/logo and colors</li>
+            <li>Content and imagery</li>
+            <li>Analytics (e.g., add Google Analytics or Plausible)</li>
+          </ul>
+          <h3>Example code snippet</h3>
+          <pre class="block">&lt;nav&gt;&lt;a href="#/about"&gt;About&lt;/a&gt;&lt;/nav&gt;</pre>
+        </div>
+      </section>
+
+      <section id="contact" class="page" style="display:none">
+        <div class="card">
+          <h1>Contact</h1>
+          <p class="small">This contact form is non-functional — GitHub Pages only serves static assets. To accept messages, wire it to a serverless form endpoint (Formspree, Netlify Forms, or use a simple Google Forms embed).</p>
+
+          <form onsubmit="event.preventDefault();alert('This is a demo: integrate a form backend to receive messages.');">
+            <label class="small">Name</label>
+            <input type="text" placeholder="Your name" required />
+            <label class="small">Email</label>
+            <input type="email" placeholder="you@example.com" required />
+            <label class="small">Message</label>
+            <textarea rows="5" placeholder="Say hi"></textarea>
+            <button type="submit">Send</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="small">Made with ❤️ · Deployed via GitHub Pages</div>
+    </footer>
+  </div>
+
+  <script>
+    // Simple hash router
+    const pages = {"#/": 'home', '#/about': 'about', '#/contact': 'contact'};
+    function navigate() {
+      const hash = location.hash || '#/';
+      const id = pages[hash] || 'home';
+      document.querySelectorAll('.page').forEach(el => el.style.display = 'none');
+      document.getElementById(id).style.display = '';
+      document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === hash));
+      // update title subtly
+      document.title = (id.charAt(0).toUpperCase() + id.slice(1)) + ' — My Static Site';
+    }
+    window.addEventListener('hashchange', navigate);
+    navigate();
+  </script>
+</body>
+</html>
