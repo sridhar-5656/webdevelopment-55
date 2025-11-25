@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact Us — Example</title>
+  <style>
+    :root{
+      --bg:#f7f8fb; --card:#fff; --accent:#2563eb; --error:#dc2626;
+      --muted:#6b7280; --radius:10px;
+    }
+    body{
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%);
+      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+      padding:32px;
+    }
+    .card{
+      background:var(--card); width:100%; max-width:720px; padding:28px; border-radius:var(--radius);
+      box-shadow:0 8px 30px rgba(2,6,23,0.08);
+    }
+    h1{ margin:0 0 8px 0; font-size:1.5rem;}
+    p.lead{ margin:0 0 20px 0; color:var(--muted); }
+    form{ display:grid; gap:12px; grid-template-columns:1fr 1fr; }
+    .full{ grid-column:1/-1; }
+    label{ display:block; font-size:0.9rem; color:#111827; margin-bottom:6px; }
+    input[type="text"], input[type="email"], input[type="tel"], textarea, select {
+      width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6e9ef; font-size:0.95rem;
+      background:#fff; box-sizing:border-box;
+    }
+    textarea{ min-height:120px; resize:vertical; }
+    .row{ display:flex; gap:10px; align-items:center; }
+    .error{ color:var(--error); font-size:0.85rem; margin-top:6px; display:none; }
+    .show{ display:block; }
+    .hint{ font-size:0.85rem; color:var(--muted); margin-top:6px; }
+    button{
+      background:var(--accent); color:white; padding:10px 14px; border-radius:8px; border:0; cursor:pointer;
+      font-weight:600; grid-column:1/-1; justify-self:start;
+    }
+    .success{
+      padding:12px; border-radius:8px; background:#ecfdf5; color:#065f46; border:1px solid #bbf7d0; margin-top:8px;
+      display:none;
+    }
+    /* small screens */
+    @media (max-width:640px){
+      form{ grid-template-columns:1fr; }
+      .full{ grid-column:1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="contactHeading">
+    <h1 id="contactHeading">Contact Us</h1>
+    <p class="lead">Have questions? Send us a message — we’ll reply within 1–2 business days.</p>
+
+    <form id="contactForm" novalidate>
+      <!-- Honeypot (hidden) to catch bots -->
+      <div style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;">
+        <label for="website">Website (leave this blank)</label>
+        <input id="website" name="website" type="text" autocomplete="off" tabindex="-1">
+      </div>
+
+      <div class="field">
+        <label for="name">Full name *</label>
+        <input id="name" name="name" type="text" required minlength="2" aria-describedby="nameError" />
+        <div id="nameError" class="error">Please enter your name (at least 2 characters).</div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email *</label>
+        <input id="email" name="email" type="email" required aria-describedby="emailError" />
+        <div id="emailError" class="error">Please enter a valid email address.</div>
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone</label>
+        <input id="phone" name="phone" type="tel" inputmode="tel" pattern="^\+?[0-9\s\-()]{7,20}$" aria-describedby="phoneError" />
+        <div id="phoneError" class="error">Please enter a valid phone number (digits, +, spaces, - allowed).</div>
+      </div>
+
+      <div class="field">
+        <label for="subject">Subject *</label>
+        <input id="subject" name="subject" type="text" required minlength="3" aria-describedby="subjectError" />
+        <div id="subjectError" class="error">Subject must be at least 3 characters.</div>
+      </div>
+
+      <div class="full">
+        <label for="message">Message *</label>
+        <textarea id="message" name="message" required minlength="10" aria-describedby="messageError"></textarea>
+        <div id="messageError" class="error">Message must be at least 10 characters.</div>
+        <div id="messageHint" class="hint">Tell us briefly what you need — include any order/account details if relevant.</div>
+      </div>
+
+      <div class="full row" aria-hidden="true">
+        <input id="consent" name="consent" type="checkbox" />
+        <label for="consent" style="margin:0;">Subscribe to occasional updates (optional)</label>
+      </div>
+
+      <button id="submitBtn" type="submit">Send message</button>
+
+      <div id="resultSuccess" class="success" role="status" aria-live="polite">
+        Thank you — your message was sent successfully.
+      </div>
+    </form>
+
+    <!-- Optional: example of server endpoint comment
+      In production, you would POST to your server endpoint (e.g. /api/contact) which would handle sending an email,
+      storing in a DB, or forwarding to a ticketing system. Client-side validation is for UX only — always validate again on server.
+    -->
+  </main>
+
+  <script>
+    (function(){
+      // Helpers
+      const $ = id => document.getElementById(id);
+      const form = $('contactForm');
+      const fields = {
+        name: $('name'),
+        email: $('email'),
+        phone: $('phone'),
+        subject: $('subject'),
+        message: $('message'),
+        website: $('website') // honeypot
+      };
+      const errors = {
+        name: $('nameError'),
+        email: $('emailError'),
+        phone: $('phoneError'),
+        subject: $('subjectError'),
+        message: $('messageError')
+      };
+      const resultSuccess = $('resultSuccess');
+      const submitBtn = $('submitBtn');
+
+      // Basic validators
+      function isEmailValid(email){
+        // reasonable email regex (not perfect, but practical)
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+      function isPhoneValid(phone){
+        if (!phone) return true; // optional
+        return /^\+?[0-9\s\-\(\)]{7,20}$/.test(phone);
+      }
+
+      // Validate single field, returns boolean
+      function validateField(name){
+        const el = fields[name];
+        const val = (el.value || '').trim();
+        let ok = true;
+
+        switch(name){
+          case 'name':
+            ok = val.length >= 2;
+            errors.name.classList.toggle('show', !ok);
+            break;
+          case 'email':
+            ok = isEmailValid(val);
+            errors.email.classList.toggle('show', !ok);
+            break;
+          case 'phone':
+            ok = isPhoneValid(val);
+            errors.phone.classList.toggle('show', !ok && val.length>0);
+            break;
+          case 'subject':
+            ok = val.length >= 3;
+            errors.subject.classList.toggle('show', !ok);
+            break;
+          case 'message':
+            ok = val.length >= 10;
+            errors.message.classList.toggle('show', !ok);
+            break;
+        }
+
+        // Set aria-invalid for accessibility
+        el.setAttribute('aria-invalid', (!ok).toString());
+        return ok;
+      }
+
+      // Real-time validation
+      Object.keys(fields).forEach(name => {
+        if(name === 'website') return; // skip honeypot
+        const el = fields[name];
+        el.addEventListener('input', () => validateField(name));
+        el.addEventListener('blur', () => validateField(name));
+      });
+
+      // Submit handler
+      form.addEventListener('submit', function(ev){
+        ev.preventDefault();
+        // hide previous success
+        resultSuccess.style.display = 'none';
+
+        // Honeypot check
+        if(fields.website.value.trim() !== ''){
+          // likely a bot
+          console.warn('Honeypot triggered — discarding submission.');
+          // pretend success to not tip off bot
+          resultSuccess.textContent = 'Thank you — your message was received.';
+          resultSuccess.style.display = 'block';
+          form.reset();
+          return;
+        }
+
+        // Validate all required fields
+        const toValidate = ['name','email','phone','subject','message'];
+        let allValid = true;
+        toValidate.forEach(name => {
+          const ok = validateField(name);
+          if(!ok) allValid = false;
+        });
+
+        if(!allValid){
+          // focus first invalid
+          const firstInvalid = toValidate.find(n => fields[n].getAttribute('aria-invalid') === 'true');
+          if(firstInvalid) fields[firstInvalid].focus();
+          return;
+        }
+
+        // Disable button during "send"
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+
+        // Simulate sending — replace with actual fetch() in real app
+        // Example:
+        // fetch('/api/contact', {
+        //   method: 'POST',
+        //   headers: {'Content-Type':'application/json'},
+        //   body: JSON.stringify({ name: fields.name.value, email: fields.email.value, ... })
+        // })
+        // .then(...)
+        // .catch(...)
+        setTimeout(() => {
+          // simulate success
+          resultSuccess.textContent = 'Thank you — your message was sent successfully.';
+          resultSuccess.style.display = 'block';
+          form.reset();
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Send message';
+          // clear aria-invalid states
+          Object.keys(fields).forEach(k => {
+            if(fields[k]) fields[k].removeAttribute('aria-invalid');
+          });
+        }, 900); // simulate network delay
+      });
+
+      // Optionally: keyboard accessibility - submit on Enter when focused inside a field (default browser behavior)
+      // Nothing else needed.
+
+    })();
+  </script>
+</body>
+</html>
